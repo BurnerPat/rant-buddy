@@ -19,7 +19,9 @@ const menu = Menu.buildFromTemplate([
 
                     rant.editor.load().then(
                         () => {
-                            rant.editor.place($("#main"));
+                            let main = $("#main");
+                            main.empty();
+                            rant.editor.place(main);
                         },
                         (err) => {
                             alert(JSON.stringify(err, null, 2));

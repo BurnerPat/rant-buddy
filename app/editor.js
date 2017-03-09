@@ -109,7 +109,7 @@ module.exports = class Editor {
                 let line = this._editor.find(`.line.line-${i}`);
 
                 if (line) {
-                    Editor.updateComment(line, state[i]);
+                    this.updateComment(line, state[i]);
                 }
             }
         }
@@ -118,6 +118,13 @@ module.exports = class Editor {
     showCommentInput(line) {
         let minRows = 5;
         let input = $("<textarea></textarea>").attr("cols", 999).attr("rows", 5);
+
+        let savedComment = line.data("comment");
+        if (savedComment) {
+            input.val(savedComment);
+        }
+
+        line.next(`.comment.comment-${line.data("number")}`).remove();
 
         input.keyup(() => {
             let text = input.val();
@@ -130,7 +137,7 @@ module.exports = class Editor {
             let text = input.val().trim();
             input.remove();
 
-            Editor.updateComment(line, text);
+            this.updateComment(line, text);
         });
 
         let wrapper = $("<div></div>").append(input);
@@ -139,7 +146,7 @@ module.exports = class Editor {
         input.focus();
     }
 
-    static updateComment(line, text) {
+    updateComment(line, text) {
         if (text.length === 0) {
             line.removeData("comment");
 
@@ -149,6 +156,11 @@ module.exports = class Editor {
             line.data("comment", text);
 
             let comment = $("<div></div>").addClass(`comment comment-${line.data("number")}`).html(Editor.formatText(text));
+
+            comment.click(() => {
+                this.showCommentInput(line);
+            });
+
             line.after(comment);
         }
     }
