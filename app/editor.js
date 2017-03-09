@@ -48,7 +48,13 @@ module.exports = class Editor {
 
     save() {
         return new Promise((resolve, reject) => {
-            fs.writeFile(this.file + ".rant.json", JSON.stringify(this.state, null, 2), err => {
+            let state = this.state;
+
+            if (Object.keys(state).length === 0) {
+                return;
+            }
+
+            fs.writeFile(this.file + ".rant.json", JSON.stringify(state, null, 2), err => {
                 if (err) {
                     reject(err);
                 }
