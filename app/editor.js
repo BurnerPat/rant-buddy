@@ -11,23 +11,61 @@ module.exports = class Editor {
     }
 
     load() {
+        return Promise.all([
+            new Promise((resolve, reject) => {
+                fs.readFile(this.file, (err, data) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        this._code = data.toString();
+                        resolve();
+                    }
+                });
+            }),
+            new Promise((resolve, reject) => {
+                let saved = this.file + ".rant.json";
+
+                fs.access(saved, fs.constants.R_OK, err => {
+                    if (!err) {
+                        fs.readFile(this.file + ".rant.json", (err, data) => {
+                            if (err) {
+                                reject(err);
+                            }
+                            else {
+                                this._savedState = JSON.parse(data);
+                                resolve();
+                            }
+                        });
+                    }
+                    else {
+                        resolve();
+                    }
+                });
+            })
+        ]);
+    }
+
+    save() {
         return new Promise((resolve, reject) => {
-            fs.readFile(this.file, (err, data) => {
+            fs.writeFile(this.file + ".rant.json", JSON.stringify(this.state, null, 2), err => {
                 if (err) {
                     reject(err);
                 }
                 else {
-                    this._code = data.toString();
                     resolve();
                 }
             });
         });
     }
 
-    create(target) {
+    place(target) {
         if (!this._code) {
             throw new Error("Editor is not loaded");
         }
+
+        this._inner = $("<code></code>");
+        this._editor = $("<pre></pre>").addClass("editor").append(this._inner);
 
         let html = prism.highlight(this._code.toString(), prism.languages.javascript);
 
@@ -39,10 +77,42 @@ module.exports = class Editor {
 
             line.click(this.showCommentInput.bind(this, line));
 
-            target.append(line);
+            this._editor.append(line);
         });
 
-        target.addClass("editor");
+        if (this._savedState) {
+            this.state = this._savedState;
+            delete this._savedState;
+        }
+
+        target.append(this._editor);
+    }
+
+    get state() {
+        let state = {};
+
+        this._editor.find(".line").each((i, line) => {
+            let number = $(line).data("number");
+            let comment = $(line).data("comment");
+
+            if (comment && comment.trim().length > 0) {
+                state[number] = comment;
+            }
+        });
+
+        return state;
+    }
+
+    set state(state) {
+        for (let i in state) {
+            if (state.hasOwnProperty(i)) {
+                let line = this._editor.find(`.line.line-${i}`);
+
+                if (line) {
+                    Editor.updateComment(line, state[i]);
+                }
+            }
+        }
     }
 
     showCommentInput(line) {
@@ -60,23 +130,27 @@ module.exports = class Editor {
             let text = input.val().trim();
             input.remove();
 
-            if (text.length === 0) {
-                line.removeData("comment");
-
-                line.next(`.comment.comment-${line.data("number")}`).remove();
-            }
-            else {
-                line.data("comment", text);
-
-                let comment = $("<div></div>").addClass(`comment comment-${line.data("number")}`).html(Editor.formatText(text));
-                line.after(comment);
-            }
+            Editor.updateComment(line, text);
         });
 
         let wrapper = $("<div></div>").append(input);
         line.after(wrapper);
 
         input.focus();
+    }
+
+    static updateComment(line, text) {
+        if (text.length === 0) {
+            line.removeData("comment");
+
+            line.next(`.comment.comment-${line.data("number")}`).remove();
+        }
+        else {
+            line.data("comment", text);
+
+            let comment = $("<div></div>").addClass(`comment comment-${line.data("number")}`).html(Editor.formatText(text));
+            line.after(comment);
+        }
     }
 
     static formatText(text) {
