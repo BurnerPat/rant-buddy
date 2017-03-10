@@ -131,6 +131,13 @@ module.exports = class Editor {
 
         line.next(`.comment.comment-${line.data("number")}`).remove();
 
+        input.keyup(e => {
+            if (e.keyCode === 27) {
+                input.remove();
+                this.updateComment(line, line.data("comment"));
+            }
+        });
+
         input.keyup(() => {
             let text = input.val();
             let match = text.match(/\n/g);
@@ -141,7 +148,6 @@ module.exports = class Editor {
         input.blur(() => {
             let text = input.val().trim();
             input.remove();
-
             this.updateComment(line, text);
         });
 

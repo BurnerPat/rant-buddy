@@ -60,12 +60,12 @@ menu.append(new MenuItem({
         {
             label: "Goto previous comment",
             accelerator: "Ctrl+Up",
-            click: App.gotoPreviousComment
+            click: App.goToPreviousComment
         },
         {
             label: "Goto next comment",
             accelerator: "Ctrl+Down",
-            click: App.gotoNextComment
+            click: App.goToNextComment
         },
         {
             label: "Open DevTools...",

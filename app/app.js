@@ -65,7 +65,7 @@ module.exports = class App {
         $("<link id='theme' rel='stylesheet'>").attr("href", "./style/" + path.basename(theme)).appendTo($("head"));
     }
 
-    static gotoNextComment() {
+    static goToNextComment() {
         const scroll = $("html, body").scrollTop();
 
         $(".editor > .comment").each((i, element) => {
@@ -76,7 +76,7 @@ module.exports = class App {
         });
     }
 
-    static gotoPreviousComment() {
+    static goToPreviousComment() {
         const scroll = $("html, body").scrollTop();
         let previous = null;
 
