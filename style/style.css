@@ -1,3 +1,6 @@
+html {
+  font-family: "Helvetica Neue", "Arial", sans-serif;
+}
 .editor {
   width: 100%;
   height: 100%;
@@ -16,6 +19,7 @@
   border-right: 1px solid;
   display: inline-block;
   padding-right: 1rem;
+  font-family: monospace;
 }
 .editor > .line .code {
   padding-left: 1rem;
@@ -26,7 +30,10 @@
   font-family: monospace;
 }
 .editor > .comment {
+  border: 1px solid;
+  margin: -1px;
   padding: 0.5rem 1rem;
+  font-size: 12px;
 }
 .editor > .comment p {
   margin-top: 0;
