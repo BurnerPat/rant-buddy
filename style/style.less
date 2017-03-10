@@ -3,7 +3,7 @@
     height: 100%;
 
     & > .line {
-        box-sizing: border-box;
+        white-space: nowrap;
 
         &:hover {
             cursor: pointer;
@@ -22,6 +22,12 @@
 
         .code {
             padding-left: 1rem;
+
+            pre {
+                display: inline-block;
+                margin: 0;
+                font-family: monospace;
+            }
         }
     }
 

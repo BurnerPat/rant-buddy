@@ -65,6 +65,35 @@ module.exports = class App {
         $("<link id='theme' rel='stylesheet'>").attr("href", "./style/" + path.basename(theme)).appendTo($("head"));
     }
 
+    static gotoNextComment() {
+        const scroll = $("html, body").scrollTop();
+
+        $(".editor > .comment").each((i, element) => {
+            if (scroll - $(element).position().top > 0) {
+                App.scrollTo($(element).prev(".line"));
+                return false;
+            }
+        });
+    }
+
+    static gotoPreviousComment() {
+        const scroll = $("html, body").scrollTop();
+        let previous = null;
+
+        $(".editor > .comment").each((i, element) => {
+            if (scroll - $(element).position().top >= 0) {
+                return false;
+            }
+            else {
+                previous = $(element);
+            }
+        });
+
+        if (previous) {
+            App.scrollTo(previous.prev(".line"));
+        }
+    }
+
     static scrollTo(line) {
         if (!isNaN(line)) {
             line = $(`.line.line-${line}`);

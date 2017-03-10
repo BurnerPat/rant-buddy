@@ -58,6 +58,16 @@ menu.append(new MenuItem({
             }
         },
         {
+            label: "Goto previous comment",
+            accelerator: "Ctrl+Up",
+            click: App.gotoPreviousComment
+        },
+        {
+            label: "Goto next comment",
+            accelerator: "Ctrl+Down",
+            click: App.gotoNextComment
+        },
+        {
             label: "Open DevTools...",
             accelerator: "F12",
             click () {
