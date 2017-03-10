@@ -66,31 +66,35 @@ module.exports = class App {
     }
 
     static goToNextComment() {
-        const scroll = $("html, body").scrollTop();
+        const scroll = $("body").scrollTop() + 1;
 
         $(".editor > .comment").each((i, element) => {
-            if (scroll - $(element).position().top > 0) {
-                App.scrollTo($(element).prev(".line"));
+            let line = $(element).prev(".line");
+
+            if (line.position().top - scroll > 0) {
+                App.scrollTo(line);
                 return false;
             }
         });
     }
 
     static goToPreviousComment() {
-        const scroll = $("html, body").scrollTop();
+        const scroll = $("body").scrollTop() - 1;
         let previous = null;
 
         $(".editor > .comment").each((i, element) => {
-            if (scroll - $(element).position().top >= 0) {
+            let line = $(element).prev(".line");
+
+            if (line.position().top - scroll >= 0) {
                 return false;
             }
             else {
-                previous = $(element);
+                previous = line;
             }
         });
 
         if (previous) {
-            App.scrollTo(previous.prev(".line"));
+            App.scrollTo(previous);
         }
     }
 
@@ -103,7 +107,7 @@ module.exports = class App {
             return;
         }
 
-        $("html, body").scrollTop($(line).offset().top);
+        $("body").scrollTop($(line).offset().top);
     }
 
     static prompt(message) {
