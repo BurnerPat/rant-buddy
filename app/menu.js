@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 const Editor = require("./editor");
+const App = require("./app");
 
 const menu = new Menu();
 
@@ -66,37 +67,16 @@ menu.append(new MenuItem({
     ]
 }));
 
-const styleDir = remote.getGlobal("env").directories.style;
+App.loadThemes().then(() => {
+    App.themes.forEach((theme) => {
+        themeMenu.append(new MenuItem({
+            label: theme,
+            click() {
+                App.theme = theme;
+            }
+        }));
 
-fs.readdir(styleDir, (err, files) => {
-    if (err) {
-        throw new Error("Failed to read styles directory");
-    }
-
-    files.forEach((file) => {
-        if (/\.theme\.css$/.test(file)) {
-            file = path.normalize(path.join(styleDir, file));
-
-            fs.readFile(file, (err, data) => {
-                if (err) {
-                    return;
-                }
-
-                let match = data.toString().match(/@theme\(([^)]+)\)/);
-
-                if (match && match.length === 2) {
-                    themeMenu.append(new MenuItem({
-                        label: match[1],
-                        click() {
-                            $("#theme").remove();
-                            $("<link id='theme' rel='stylesheet'>").attr("href", "./style/" + path.basename(file)).appendTo($("head"));
-                        }
-                    }));
-
-                    remote.getCurrentWindow().setMenu(menu);
-                }
-            });
-        }
+        remote.getCurrentWindow().setMenu(menu);
     });
 });
 
