@@ -57,6 +57,25 @@ menu.append(new MenuItem({
                     rant.editor.save(file);
                 }
             }
+        },
+        {
+            label: "Save as...",
+            accelerator: "Ctrl+Shift+S",
+            click() {
+                if (rant.editor) {
+                    let file = dialog.showSaveDialog({
+                        defaultPath: (rant.editor.file ? rant.editor.file + ".rant" : "unnamed.rant"),
+                        filters: [
+                            {
+                                name: "Rant file",
+                                extensions: ["rant"]
+                            }
+                        ]
+                    });
+
+                    rant.editor.save(file);
+                }
+            }
         }
     ]
 }));
