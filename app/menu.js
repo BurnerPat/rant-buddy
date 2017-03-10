@@ -20,9 +20,9 @@ menu.append(new MenuItem({
                     properties: ["openFile"]
                 })[0];
 
-                rant.editor = new Editor(file);
+                rant.editor = new Editor();
 
-                rant.editor.load().then(
+                (path.extname(file) === ".rant" ? rant.editor.load(file) : rant.editor.create(file)).then(
                     () => {
                         let main = $("#main");
                         main.empty();
@@ -40,7 +40,21 @@ menu.append(new MenuItem({
             accelerator: "Ctrl+S",
             click () {
                 if (rant.editor) {
-                    rant.editor.save();
+                    let file = rant.editor.file;
+
+                    if (!file || path.extname(file) !== ".rant") {
+                        file = dialog.showSaveDialog({
+                            defaultPath: (file ? file + ".rant" : "unnamed.rant"),
+                            filters: [
+                                {
+                                    name: "Rant file",
+                                    extensions: ["rant"]
+                                }
+                            ]
+                        });
+                    }
+
+                    rant.editor.save(file);
                 }
             }
         }

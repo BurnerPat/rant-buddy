@@ -1,52 +1,59 @@
 const fs = require("fs");
 const prism = require("prismjs");
+const zlib = require("zlib");
 
 module.exports = class Editor {
-    constructor(file) {
-        this._file = file;
+    constructor() {
+
     }
 
     get file() {
         return this._file;
     }
 
-    load() {
-        return Promise.all([
-            new Promise((resolve, reject) => {
-                fs.readFile(this.file, (err, data) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        this._code = data.toString();
-                        resolve();
-                    }
-                });
-            }),
-            new Promise((resolve, reject) => {
-                let saved = this.file + ".rant.json";
+    create(file) {
+        return new Promise((resolve, reject) => {
+            fs.readFile(file, (err, data) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    this._code = data.toString();
+                    this._file = file;
 
-                fs.access(saved, fs.constants.R_OK, err => {
-                    if (!err) {
-                        fs.readFile(this.file + ".rant.json", (err, data) => {
-                            if (err) {
-                                reject(err);
-                            }
-                            else {
-                                this._savedState = JSON.parse(data);
-                                resolve();
-                            }
-                        });
-                    }
-                    else {
-                        resolve();
-                    }
-                });
-            })
-        ]);
+                    resolve();
+                }
+            });
+        });
     }
 
-    save() {
+    load(file) {
+        return new Promise((resolve, reject) => {
+            fs.readFile(file, (err, data) => {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    let obj = JSON.parse(data);
+
+                    zlib.gunzip(Buffer.from(obj.src, "base64"), (err, buffer) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            this._code = buffer.toString();
+                            this._savedState = obj.comments;
+                            this._file = file;
+
+                            resolve();
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    save(file) {
         return new Promise((resolve, reject) => {
             let state = this.state;
 
@@ -54,12 +61,25 @@ module.exports = class Editor {
                 return;
             }
 
-            fs.writeFile(this.file + ".rant.json", JSON.stringify(state, null, 2), err => {
+            zlib.gzip(Buffer.from(this._code), (err, buffer) => {
                 if (err) {
                     reject(err);
                 }
                 else {
-                    resolve();
+                    let obj = {
+                        comments: state,
+                        src: buffer.toString("base64")
+                    };
+
+                    fs.writeFile(file, JSON.stringify(obj, null, 2), (err) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            this._file = file;
+                            resolve();
+                        }
+                    });
                 }
             });
         });
