@@ -6,6 +6,13 @@ const url = require("url");
 
 let window;
 
+global.env = {
+    directories: {
+        app: path.normalize(path.join(__dirname, "app")),
+        style: path.normalize(path.join(__dirname, "style")),
+    }
+};
+
 function createWindow() {
     window = new BrowserWindow({
         width: 1024,

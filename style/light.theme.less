@@ -1,0 +1,39 @@
+/* @theme(Light) */
+
+.editor {
+    .line {
+        &:hover {
+            background-color: #eee;
+            border-color: #999;
+        }
+
+        .lineNumber {
+            border-color: #999;
+            color: #800000;
+        }
+
+        .code {
+            .token {
+                &.string {
+                    color: #008000;
+                }
+
+                &.keyword {
+                    color: #000080;
+                }
+
+                &.number {
+                    color: #0000ff;
+                }
+
+                &.comment {
+                    color: #808080;
+                }
+            }
+        }
+    }
+
+    & > .comment {
+        background-color: #ffffd7;
+    }
+}

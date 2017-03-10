@@ -1,47 +1,31 @@
 .editor {
-    .line {
+    width: 100%;
+    height: 100%;
+
+    & > .line {
         box-sizing: border-box;
 
         &:hover {
             cursor: pointer;
-            background-color: #eee;
-
-            border: 1px solid #999;
+            border: 1px solid;
             margin: -1px;
         }
 
         .lineNumber {
             width: 3rem;
             text-align: right;
-            border-right: 1px solid #999;
+            border-right: 1px solid;
 
             display: inline-block;
             padding-right: 1rem;
-
-            color: #800000;
         }
 
         .code {
             padding-left: 1rem;
-
-            .token {
-                &.string {
-                    color: #008000;
-                }
-
-                &.keyword {
-                    color: #000080;
-                }
-
-                &.number {
-                    color: #0000ff;
-                }
-            }
         }
     }
 
-    .comment {
-        background-color: #ffffd7;
+    & > .comment {
         padding: 0.5rem 1rem;
 
         p {

@@ -1,0 +1,24 @@
+/* @theme(Light) */
+.editor .line:hover {
+  background-color: #eee;
+  border-color: #999;
+}
+.editor .line .lineNumber {
+  border-color: #999;
+  color: #800000;
+}
+.editor .line .code .token.string {
+  color: #008000;
+}
+.editor .line .code .token.keyword {
+  color: #000080;
+}
+.editor .line .code .token.number {
+  color: #0000ff;
+}
+.editor .line .code .token.comment {
+  color: #808080;
+}
+.editor > .comment {
+  background-color: #ffffd7;
+}
