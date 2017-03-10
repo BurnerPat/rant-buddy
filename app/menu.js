@@ -6,6 +6,7 @@ const path = require("path");
 
 const Editor = require("./editor");
 const App = require("./app");
+const Export = require("./export");
 
 const menu = new Menu();
 
@@ -74,6 +75,27 @@ menu.append(new MenuItem({
                     });
 
                     rant.editor.save(file);
+                }
+            }
+        },
+        {
+            label: "Export as PDF...",
+            accelerator: "Ctrl+Shift+E",
+            click() {
+                if (rant.editor) {
+                    Export.toPDF(rant.editor).then(buffer => {
+                        let file = dialog.showSaveDialog({
+                            defaultPath: (rant.editor.file ? rant.editor.file + ".rant.pdf" : "export.pdf"),
+                            filters: [
+                                {
+                                    name: "Portable Document Format",
+                                    extensions: ["pdf"]
+                                }
+                            ]
+                        });
+
+                        fs.writeFile(file, buffer);
+                    });
                 }
             }
         }

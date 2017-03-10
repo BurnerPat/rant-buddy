@@ -7,6 +7,10 @@ module.exports = class Editor {
 
     }
 
+    get content() {
+        return this._content;
+    }
+
     get file() {
         return this._file;
     }
@@ -90,7 +94,7 @@ module.exports = class Editor {
             throw new Error("Editor is not loaded");
         }
 
-        this._editor = $("<div class='editor'></div>");
+        this._content = $("<div class='editor'></div>");
 
         let html = prism.highlight(this._code.toString(), prism.languages.javascript);
 
@@ -102,7 +106,7 @@ module.exports = class Editor {
 
             line.click(this.showCommentInput.bind(this, line));
 
-            this._editor.append(line);
+            this._content.append(line);
         });
 
         if (this._savedState) {
@@ -110,13 +114,13 @@ module.exports = class Editor {
             delete this._savedState;
         }
 
-        target.append(this._editor);
+        target.append(this._content);
     }
 
     get state() {
         let state = {};
 
-        this._editor.find(".line").each((i, line) => {
+        this._content.find(".line").each((i, line) => {
             let number = $(line).data("number");
             let comment = $(line).data("comment");
 
@@ -131,7 +135,7 @@ module.exports = class Editor {
     set state(state) {
         for (let i in state) {
             if (state.hasOwnProperty(i)) {
-                let line = this._editor.find(`.line.line-${i}`);
+                let line = this._content.find(`.line.line-${i}`);
 
                 if (line) {
                     this.updateComment(line, state[i]);
@@ -178,7 +182,7 @@ module.exports = class Editor {
     }
 
     updateComment(line, text) {
-        if (text.length === 0) {
+        if (!text || text.length === 0) {
             line.removeData("comment");
 
             line.next(`.comment.comment-${line.data("number")}`).remove();
@@ -194,6 +198,47 @@ module.exports = class Editor {
 
             line.after(comment);
         }
+    }
+
+    getExportHTML(around) {
+        let state = this.state;
+        let content = $(this.content).clone();
+
+        const commentLines = Object.keys(state).sort((x, y) => {
+            return Number(x) - Number(y);
+        });
+
+        let targetLines = [];
+
+        commentLines.forEach(l => {
+            l = parseInt(l, 10);
+
+            for (let i = Math.max(1, l - around); i <= l + around; i++) {
+                if (targetLines.indexOf(i) < 0) {
+                    targetLines.push(i);
+                }
+            }
+        });
+
+        let lastNumber = 0;
+
+        content.find(".line").each((i, line) => {
+            // clone() does not copy data attributes
+            let number = parseInt(line.className.match(/line-(\d+)/)[1], 10);
+
+            if (targetLines.indexOf(number) < 0) {
+                if (number - lastNumber === 1) {
+                    $(line).insertBefore($("<div class='skip'></div>"));
+                }
+
+                $(line).remove();
+            }
+            else {
+                lastNumber = number;
+            }
+        });
+
+        return content[0].outerHTML;
     }
 
     static formatText(text) {

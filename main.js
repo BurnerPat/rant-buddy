@@ -10,6 +10,7 @@ global.env = {
     directories: {
         app: path.normalize(path.join(__dirname, "app")),
         style: path.normalize(path.join(__dirname, "style")),
+        res: path.normalize(path.join(__dirname, "res"))
     }
 };
 
