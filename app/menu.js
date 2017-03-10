@@ -47,16 +47,16 @@ menu.append(new MenuItem({
     ]
 }));
 
-const themeMenu = new Menu();
-
 menu.append(new MenuItem({
-    label: "Themes",
-    submenu: themeMenu
-}));
-
-menu.append(new MenuItem({
-    label: "Utilities",
+    label: "Edit",
     submenu: [
+        {
+            label: "Goto line...",
+            accelerator: "Ctrl+L",
+            click() {
+                App.prompt("Enter line number").then(App.scrollTo);
+            }
+        },
         {
             label: "Open DevTools...",
             accelerator: "F12",
@@ -65,6 +65,13 @@ menu.append(new MenuItem({
             }
         }
     ]
+}));
+
+const themeMenu = new Menu();
+
+menu.append(new MenuItem({
+    label: "Themes",
+    submenu: themeMenu
 }));
 
 App.loadThemes().then(() => {

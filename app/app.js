@@ -3,6 +3,10 @@ const remote = require("electron").remote;
 const fs = require("fs");
 const path = require("path");
 
+const vex = require("vex-js");
+vex.registerPlugin(require('vex-dialog'));
+vex.defaultOptions.className = "vex-theme-top";
+
 module.exports = class App {
     static loadThemes() {
         if (App.themes.length > 0) {
@@ -59,5 +63,27 @@ module.exports = class App {
 
         $("#theme").remove();
         $("<link id='theme' rel='stylesheet'>").attr("href", "./style/" + path.basename(theme)).appendTo($("head"));
+    }
+
+    static scrollTo(line) {
+        if (!isNaN(line)) {
+            line = $(`.line.line-${line}`);
+        }
+
+        if (!line) {
+            return;
+        }
+
+        $("html, body").scrollTop($(line).offset().top);
+    }
+
+    static prompt(message) {
+        return new Promise((resolve) => {
+            vex.dialog.prompt({
+                message: "Enter line number",
+                placeholder: "1",
+                callback: resolve
+            });
+        });
     }
 };
