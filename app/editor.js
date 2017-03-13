@@ -223,18 +223,20 @@ module.exports = class Editor {
         let lastNumber = 0;
 
         content.find(".line").each((i, line) => {
-            // clone() does not copy data attributes
-            let number = parseInt(line.className.match(/line-(\d+)/)[1], 10);
+            line = $(line);
 
-            if (targetLines.indexOf(number) < 0) {
-                if (number - lastNumber === 1) {
-                    $(line).insertBefore($("<div class='skip'></div>"));
+            // clone() does not copy data attributes
+            let number = parseInt(line.attr("class").match(/line-(\d+)/)[1], 10);
+
+            if (targetLines.indexOf(number) >= 0) {
+                if (number - lastNumber > 1 && lastNumber > 0) {
+                    line.before($("<div class='skip'></div>"));
                 }
 
-                $(line).remove();
+                lastNumber = number;
             }
             else {
-                lastNumber = number;
+                line.remove();
             }
         });
 

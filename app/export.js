@@ -1,4 +1,4 @@
-const remote = require("electron").remote;
+const {ipcRenderer, remote} = require("electron");
 const {BrowserWindow} = remote;
 
 const path = require("path");
@@ -6,7 +6,8 @@ const path = require("path");
 module.exports = class Export {
     static toPDF(editor) {
         return new Promise((resolve, reject) => {
-            const exportHTML = btoa(editor.getExportHTML(10));
+            // atob and btoa are weird with UTF-8 characters
+            const exportHTML = editor.getExportHTML(10);
 
             let win = new BrowserWindow({
                 webPreferences: {
@@ -18,20 +19,17 @@ module.exports = class Export {
             win.loadURL(path.normalize(path.join(remote.getGlobal("env").directories.res, "pdf.html")));
 
             win.on("ready-to-show", () => {
-                win.webContents.executeJavaScript(`document.body.innerHTML=atob("${exportHTML}");`).then(() => {
-                    win.webContents.printToPDF({
-                        pageSize: "A4",
-                        printBackground: false
-                    }, (err, data) => {
-                        win.destroy();
+                ipcRenderer.send("exportRequest", exportHTML);
 
-                        if (err) {
-                            reject(err);
-                        }
-                        else {
-                            resolve(data);
-                        }
-                    });
+                ipcRenderer.once("exportResponse", (event, arg) => {
+                    win.destroy();
+
+                    if (arg) {
+                        resolve(Buffer.from(arg, "base64"));
+                    }
+                    else {
+                        reject();
+                    }
                 });
             });
         });

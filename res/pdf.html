@@ -6,6 +6,29 @@
 
         <link rel="stylesheet" href="../style/style.css">
         <link id="theme" rel="stylesheet" href="../style/light.theme.css">
+        <link rel="stylesheet" href="../style/pdf.css">
+
+        <script>
+            const {remote, ipcRenderer} = require("electron");
+
+            ipcRenderer.once("exportRequest", (event, arg) => {
+                document.body.innerHTML = arg;
+
+                remote.getCurrentWebContents().printToPDF({
+                    pageSize: "A4",
+                    printBackground: false
+                }, (err, data) => {
+                    if (err) {
+                        data = null;
+                    }
+                    else {
+                        data = data.toString("base64");
+                    }
+
+                    ipcRenderer.send("exportResponse", data);
+                });
+            });
+        </script>
     </head>
     <body>
 

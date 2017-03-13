@@ -1,6 +1,6 @@
 "use strict";
 
-const {app, BrowserWindow, Menu} = require("electron");
+const {app, ipcMain, BrowserWindow, Menu} = require("electron");
 const path = require("path");
 const url = require("url");
 
@@ -13,6 +13,21 @@ global.env = {
         res: path.normalize(path.join(__dirname, "res"))
     }
 };
+
+process.on("uncaughtException", err => {
+    console.error(err);
+});
+
+function createBroadcast(channel) {
+    ipcMain.on(channel, (event, arg) => {
+        BrowserWindow.getAllWindows().forEach(win => {
+            win.webContents.send(channel, arg);
+        });
+    });
+}
+
+createBroadcast("exportRequest");
+createBroadcast("exportResponse");
 
 function createWindow() {
     window = new BrowserWindow({
