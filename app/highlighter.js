@@ -32,7 +32,12 @@ class Type {
 class Highlighter {
     static highlight(type, src) {
         if (!prism.languages[type]) {
-            require(`prismjs/components/prism-${type}`);
+            try {
+                require(`prismjs/components/prism-${type}`);
+            }
+            catch (err) {
+                // We probably only failed to find the file, hence we are (most probably) fine
+            }
         }
 
         const language = prism.languages[type];
