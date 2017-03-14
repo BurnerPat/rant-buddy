@@ -1,6 +1,7 @@
 const fs = require("fs");
-const prism = require("prismjs");
 const zlib = require("zlib");
+
+const Highlighter = require("./highlighter");
 
 module.exports = class Editor {
     constructor() {
@@ -24,6 +25,7 @@ module.exports = class Editor {
                 else {
                     this._code = data.toString();
                     this._file = file;
+                    this._type = Highlighter.Type.fromFile(file);
 
                     resolve();
                 }
@@ -46,7 +48,10 @@ module.exports = class Editor {
                         }
                         else {
                             this._code = buffer.toString();
+
                             this._savedState = obj.comments;
+                            this._type = obj.type;
+
                             this._file = file;
 
                             resolve();
@@ -72,6 +77,7 @@ module.exports = class Editor {
                 else {
                     let obj = {
                         comments: state,
+                        type: this._type,
                         src: buffer.toString("base64")
                     };
 
@@ -96,25 +102,25 @@ module.exports = class Editor {
 
         this._content = $("<div class='editor'></div>");
 
-        let html = prism.highlight(this._code.toString(), prism.languages.javascript);
+        Highlighter.highlight(this._type, this._code.toString()).then(html => {
+            html.split(/\n(?!$)/g).forEach((text, i) => {
+                let lineNumber = $("<span class='lineNumber'></span>").html(i + 1);
+                let lineCode = $("<span class='code'></span>").html(`<pre><code>${text}</code></pre>`);
 
-        html.split(/\n(?!$)/g).forEach((text, i) => {
-            let lineNumber = $("<span class='lineNumber'></span>").html(i + 1);
-            let lineCode = $("<span class='code'></span>").html(`<pre><code>${text}</code></pre>`);
+                let line = $(`<div class="line line-${i + 1}"></div>`).data("number", i + 1).append(lineNumber).append(lineCode);
 
-            let line = $(`<div class="line line-${i + 1}"></div>`).data("number", i + 1).append(lineNumber).append(lineCode);
+                line.click(this.showCommentInput.bind(this, line));
 
-            line.click(this.showCommentInput.bind(this, line));
+                this._content.append(line);
+            });
 
-            this._content.append(line);
+            if (this._savedState) {
+                this.state = this._savedState;
+                delete this._savedState;
+            }
+
+            target.append(this._content);
         });
-
-        if (this._savedState) {
-            this.state = this._savedState;
-            delete this._savedState;
-        }
-
-        target.append(this._content);
     }
 
     get state() {
