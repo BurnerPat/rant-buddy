@@ -1,15 +1,19 @@
 {
     "name": "rant-buddy",
+    "productName": "Rant Buddy",
     "version": "0.0.1",
     "description": "A standalone code review app to rant at your colleagues with",
     "main": "main.js",
-    "scripts": {
-        "start": "node ./node_modules/electron/cli.js ."
-    },
     "author": "codewort.koeln",
     "license": "Apache-2.0",
+    "scripts": {
+        "start": "node ./node_modules/electron/cli.js .",
+        "dist": "build --windows --x64"
+    },
+    "build": {
+        "appId": "koeln.codewort.randBuddy"
+    },
     "dependencies": {
-        "electron": "^1.6.2",
         "jquery": "^3.1.1",
         "prismjs": "^1.6.0",
         "vex-dialog": "^1.0.6",
@@ -17,9 +21,7 @@
         "xmlhttprequest": "^1.8.0"
     },
     "devDependencies": {
-        "electron-packager": "^8.5.2",
-        "electron-winstaller": "^2.5.2",
-        "grunt": "^1.0.1",
-        "load-grunt-tasks": "^3.5.2"
+        "electron": "^1.6.2",
+        "electron-builder": "^15.5.0"
     }
 }
