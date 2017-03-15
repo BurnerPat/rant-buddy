@@ -6,8 +6,8 @@
     "scripts": {
         "start": "node ./node_modules/electron/cli.js ."
     },
-    "author": "",
-    "license": "ISC",
+    "author": "codewort.koeln",
+    "license": "Apache-2.0",
     "dependencies": {
         "electron": "^1.6.2",
         "jquery": "^3.1.1",
@@ -15,5 +15,11 @@
         "vex-dialog": "^1.0.6",
         "vex-js": "^3.1.0",
         "xmlhttprequest": "^1.8.0"
+    },
+    "devDependencies": {
+        "electron-packager": "^8.5.2",
+        "electron-winstaller": "^2.5.2",
+        "grunt": "^1.0.1",
+        "load-grunt-tasks": "^3.5.2"
     }
 }
