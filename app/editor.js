@@ -181,7 +181,7 @@ module.exports = class Editor {
             this.updateComment(line, text);
         });
 
-        let wrapper = $("<div></div>").append(input);
+        let wrapper = $("<div class='comment-prompt'></div>").append(input);
         line.after(wrapper);
 
         input.focus();

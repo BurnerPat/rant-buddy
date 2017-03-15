@@ -1,17 +1,26 @@
-html {
+html,
+body {
   font-family: "Helvetica Neue", "Arial", sans-serif;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+html #main,
+body #main {
+  width: 100%;
+  height: 100%;
 }
 .editor {
-  width: 100%;
+  padding: 0 0.5rem;
   height: 100%;
 }
 .editor > .line {
   white-space: nowrap;
+  border: 1px solid transparent;
 }
 .editor > .line:hover {
   cursor: pointer;
-  border: 1px solid;
-  margin: -1px;
 }
 .editor > .line .lineNumber {
   width: 3rem;
@@ -29,10 +38,19 @@ html {
   margin: 0;
   font-family: monospace;
 }
+.editor > .comment-prompt {
+  margin: 0.5rem 1rem;
+  box-sizing: content-box;
+}
+.editor > .comment-prompt textarea {
+  width: 100%;
+  white-space: nowrap;
+  resize: vertical;
+}
 .editor > .comment {
   border: 1px solid;
-  margin: -1px;
   padding: 0.5rem 1rem;
+  margin: 0.5rem 1rem;
   font-size: 12px;
 }
 .editor > .comment p {
