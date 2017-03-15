@@ -163,7 +163,6 @@ module.exports = class Editor {
 
         input.keyup(e => {
             if (e.keyCode === 27) {
-                input.remove();
                 this.updateComment(line, line.data("comment"));
             }
         });
@@ -176,9 +175,7 @@ module.exports = class Editor {
         });
 
         input.blur(() => {
-            let text = input.val().trim();
-            input.remove();
-            this.updateComment(line, text);
+            this.updateComment(line, input.val().trim());
         });
 
         let wrapper = $("<div class='comment-prompt'></div>").append(input);
@@ -188,10 +185,11 @@ module.exports = class Editor {
     }
 
     updateComment(line, text) {
+        line.parent(".editor").find(".comment-prompt").remove();
+        line.parent(".editor").find(`.comment.comment-${line.data("number")}`).remove();
+
         if (!text || text.length === 0) {
             line.removeData("comment");
-
-            line.next(`.comment.comment-${line.data("number")}`).remove();
         }
         else {
             line.data("comment", text);
