@@ -6,6 +6,13 @@ const url = require("url");
 
 let window;
 
+const packageJSON = require("./package.json");
+
+global.info = {
+    name: packageJSON.productName,
+    version: packageJSON.version
+};
+
 global.env = {
     directories: {
         app: path.normalize(path.join(__dirname, "app")),

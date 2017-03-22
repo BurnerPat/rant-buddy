@@ -1,11 +1,12 @@
 const fs = require("fs");
 const zlib = require("zlib");
+const EventEmitter = require("events");
 
 const Highlighter = require("./highlighter");
 
-module.exports = class Editor {
+module.exports = class Editor extends EventEmitter {
     constructor() {
-
+        super();
     }
 
     get content() {
@@ -28,6 +29,8 @@ module.exports = class Editor {
                     this._type = Highlighter.Type.fromFile(file);
 
                     resolve();
+
+                    this.emit("ready", this);
                 }
             });
         });
@@ -88,6 +91,7 @@ module.exports = class Editor {
                         else {
                             this._file = file;
                             resolve();
+                            this.emit("save", this);
                         }
                     });
                 }
@@ -120,6 +124,8 @@ module.exports = class Editor {
             }
 
             target.append(this._content);
+
+            this.emit("ready", this);
         });
     }
 
@@ -188,6 +194,8 @@ module.exports = class Editor {
         line.parent(".editor").find(".comment-prompt").remove();
         line.parent(".editor").find(`.comment.comment-${line.data("number")}`).remove();
 
+        let previousText = line.data("comment");
+
         if (!text || text.length === 0) {
             line.removeData("comment");
         }
@@ -201,6 +209,10 @@ module.exports = class Editor {
             });
 
             line.after(comment);
+        }
+
+        if (previousText !== text) {
+            this.emit("change", this);
         }
     }
 

@@ -23,6 +23,18 @@ menu.append(new MenuItem({
 
                 rant.editor = new Editor();
 
+                rant.editor.on("ready", editor => {
+                    App.setTitle(editor.file, false);
+                });
+
+                rant.editor.on("change", editor => {
+                    App.setTitle(editor.file, true);
+                });
+
+                rant.editor.on("save", editor => {
+                    App.setTitle(editor.file, false);
+                });
+
                 (path.extname(file) === ".rant" ? rant.editor.load(file) : rant.editor.create(file)).then(
                     () => {
                         let main = $("#main");

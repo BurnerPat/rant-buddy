@@ -8,6 +8,14 @@ vex.registerPlugin(require('vex-dialog'));
 vex.defaultOptions.className = "vex-theme-top";
 
 module.exports = class App {
+    static get info() {
+        if (!App._info) {
+            App._info = remote.getGlobal("info");
+        }
+
+        return App._info;
+    }
+
     static loadThemes() {
         if (App.themes.length > 0) {
             return Promise.resolve();
@@ -118,5 +126,9 @@ module.exports = class App {
                 callback: resolve
             });
         });
+    }
+
+    static setTitle(file, changed) {
+        window.document.title = `${changed ? "* " : ""}${file} - ${App.info.name} ${App.info.version}`;
     }
 };
